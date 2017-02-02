@@ -43,6 +43,8 @@ void init ()
  */
 void setup()
 {
+	usart_init();
+	init_printf(NULL, usart_putchar);
 	i2c_init();
 	// Practicing bno055 library interaction
 	struct bno055_t myBNO;
@@ -56,7 +58,7 @@ void setup()
 //	bno055_convert_float_euler_hpr_deg(&eulerData);
 	uint8_t accel_calib_status = 0;
 	bno055_get_accel_calib_stat(&accel_calib_status);
-//	printf("Here: 0x%02X\n", accel_calib_status);
+	printf("Here: 0x%02X\n", accel_calib_status);
 }
 
 /* Loop

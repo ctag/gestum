@@ -16,6 +16,8 @@
 #include <string.h>
 
 #include "avr-i2c.h"
+#include "avr-usart.h"
+#include "avr-printf.h"
 #include "bno055.h"
 
 #endif // MAIN_H
