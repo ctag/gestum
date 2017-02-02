@@ -72,6 +72,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/BNO055_driver/bno055.h" />
+		<Unit filename="lib/avr-i2c/avr-i2c.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/avr-i2c/avr-i2c.h" />
 		<Unit filename="src/fuse.c">
 			<Option compilerVar="CC" />
 		</Unit>

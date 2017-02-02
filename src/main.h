@@ -15,6 +15,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "avr-i2c.h"
 #include "bno055.h"
 
 #endif // MAIN_H
