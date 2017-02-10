@@ -75,13 +75,6 @@ void setup()
 	myBNO.bus_write = i2c_wrangler_write;
 	myBNO.delay_msec = delay_ms_wrangler; //_delay_ms;
 	myBNO.dev_addr = (BNO055_I2C_ADDR1<<1);
-//	_delay_ms(1000);
-
-	PORTB = (1<<PB1);
-
-//	uint8_t dat;
-//	err=i2c_readReg(0x28<<1, 0x39, &dat, 1);
-//	printf("0x%02X, err: 0x%02X\n", dat, err);
 
 	err=bno055_init(&myBNO);
 	printf("bno init: %d\n", err);
@@ -103,8 +96,6 @@ void setup()
 		_delay_ms(500);
 	} while (accel_calib_status != 3 || gyro_calib_status != 3 || mag_calib_status != 3 || err != 0);
 
-//	struct bno055_euler_float_t eulerData;
-//	bno055_convert_float_euler_hpr_deg(&eulerData);
 	sei();
 }
 
@@ -114,7 +105,7 @@ void setup()
 void loop()
 {
 //	printf("Calibration:\n\tAccel: 0x%02X\n\tMag: 0x%02X\n\tGyro: 0x%02X\n\tSys: 0x%02X\n\tError: %d\n", accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status, err);
-//		printf("Linear Accel: %d, %d, %d\n", (int)d_linear_accel_xyz.x, (int)d_linear_accel_xyz.y, (int)d_linear_accel_xyz.z);
+//	printf("Linear Accel: %d, %d, %d\n", (int)d_linear_accel_xyz.x, (int)d_linear_accel_xyz.y, (int)d_linear_accel_xyz.z);
 
 	if (proc_flag)
 	{
