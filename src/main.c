@@ -14,8 +14,10 @@ struct bno055_accel_double_t d_accel_xyz;
 struct bno055_linear_accel_double_t d_linear_accel_xyz;
 double vel_x = 0;
 double pos_x = 0;
-unsigned int output_counter = 0;
+unsigned int read_counter = 0;
 char float_str[12];
+uint8_t proc_flag = 0;
+uint8_t calibrated = 0;
 
 int8_t i2c_wrangler_read(uint8_t dev_addr, uint8_t reg_addr, uint8_t *reg_data, uint8_t count)
 {
@@ -42,9 +44,14 @@ void delay_ms_wrangler(u32 msek)
  */
 void init ()
 {
-        // Pin setup
-        DDRB = (1 << PB1); // Set as output
-        DDRD = (1 << PD6); // Set as output
+	// Pin setup
+	DDRB = (1 << PB1) | (1 << PB2); // Set as output
+	DDRD = (1 << PD6); // Set as output
+	// Timer0 setup
+	TCCR0B = (1 << CS02) | (1 << CS00);
+	TCNT0 = 0;
+	OCR0B = 156;
+	TIMSK0 = (1<< OCIE0B);
 }
 
 /**
@@ -56,8 +63,8 @@ void init ()
 void setup()
 {
 	int8_t err = 0;
-	wdt_disable();
 	cli();
+	wdt_disable();
 	usart_init();
 	init_printf(NULL, usart_putchar);
 	printf("Printf init.\n");
@@ -68,7 +75,9 @@ void setup()
 	myBNO.bus_write = i2c_wrangler_write;
 	myBNO.delay_msec = delay_ms_wrangler; //_delay_ms;
 	myBNO.dev_addr = (BNO055_I2C_ADDR1<<1);
-	_delay_ms(1000);
+//	_delay_ms(1000);
+
+	PORTB = (1<<PB1);
 
 //	uint8_t dat;
 //	err=i2c_readReg(0x28<<1, 0x39, &dat, 1);
@@ -83,6 +92,7 @@ void setup()
 
 //	struct bno055_euler_float_t eulerData;
 //	bno055_convert_float_euler_hpr_deg(&eulerData);
+	sei();
 }
 
 /* Loop
@@ -90,32 +100,28 @@ void setup()
  */
 void loop()
 {
-	int8_t err = 0;
-	output_counter++;
-	err += bno055_get_accel_calib_stat(&accel_calib_status);
-	err+= bno055_get_mag_calib_stat(&mag_calib_status);
-	err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
-	err+=bno055_get_sys_calib_stat(&sys_calib_status);
 //	printf("Calibration:\n\tAccel: 0x%02X\n\tMag: 0x%02X\n\tGyro: 0x%02X\n\tSys: 0x%02X\n\tError: %d\n", accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status, err);
-	if (accel_calib_status == 3 && gyro_calib_status == 3 && mag_calib_status == 3 && err == 0)
-	{
-//		bno055_convert_double_accel_xyz_msq(&d_accel_xyz);
-//		printf("Accel: %d, %d, %d\n", (int)d_accel_xyz.x, (int)d_accel_xyz.y, (int)d_accel_xyz.z);
-		bno055_convert_double_linear_accel_xyz_msq(&d_linear_accel_xyz);
 //		printf("Linear Accel: %d, %d, %d\n", (int)d_linear_accel_xyz.x, (int)d_linear_accel_xyz.y, (int)d_linear_accel_xyz.z);
-		vel_x += (d_linear_accel_xyz.x * 0.01);
-		pos_x += (vel_x * 0.01);
-		if (output_counter%16 == 0)
+
+	if (proc_flag)
+	{
+		if (calibrated)
 		{
-			dtostrf(d_linear_accel_xyz.x, 10, 8, float_str);
-			printf("%u\t%s\t", output_counter, float_str);
-			dtostrf(vel_x, 10, 8, float_str);
-			printf("%s\t", float_str);
-			dtostrf(pos_x, 10, 8, float_str);
-			printf("%s\n", float_str);
+			vel_x += (d_linear_accel_xyz.x * 0.01);
+			pos_x += (vel_x * 0.01);
+			if (read_counter%16 == 0)
+			{
+				dtostrf(d_linear_accel_xyz.x, 10, 8, float_str);
+				printf("%u\t%s\t", read_counter, float_str);
+				dtostrf(vel_x, 10, 8, float_str);
+				printf("%s\t", float_str);
+				dtostrf(pos_x, 10, 8, float_str);
+				printf("%s\n", float_str);
+			}
+			PORTB = 0x00;
 		}
+		proc_flag = 0;
 	}
-	_delay_ms(10);
 }
 
 /* Main
@@ -134,4 +140,28 @@ int main(void)
     }
 
     return 0;
+}
+
+// Interrupt vector
+ISR(TIMER0_COMPB_vect)
+{
+	int8_t err = 0;
+	proc_flag = 1;
+	PORTB = (1<<PB1);
+	read_counter++;
+
+	err+=bno055_get_accel_calib_stat(&accel_calib_status);
+	err+= bno055_get_mag_calib_stat(&mag_calib_status);
+	err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
+	err+=bno055_get_sys_calib_stat(&sys_calib_status);
+
+	if (accel_calib_status == 3 && gyro_calib_status == 3 && mag_calib_status == 3 && err == 0)
+	{
+		calibrated = 1;
+		bno055_convert_double_linear_accel_xyz_msq(&d_linear_accel_xyz);
+	}
+	else
+	{
+		calibrated = 0;
+	}
 }
