@@ -76,6 +76,14 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/avr-i2c/avr-i2c.h" />
+		<Unit filename="lib/avr-printf/avr-printf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/avr-printf/avr-printf.h" />
+		<Unit filename="lib/avr-usart/avr-usart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/avr-usart/avr-usart.h" />
 		<Unit filename="src/fuse.c">
 			<Option compilerVar="CC" />
 		</Unit>
