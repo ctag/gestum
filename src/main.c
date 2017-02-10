@@ -5,15 +5,18 @@
 
 #include "main.h"
 
+#define FILTER_WINDOW 10
+
 struct bno055_t myBNO;
 uint8_t accel_calib_status = 0;
 uint8_t gyro_calib_status = 0;
 uint8_t mag_calib_status = 0;
 uint8_t sys_calib_status = 0;
 struct bno055_accel_double_t d_accel_xyz;
-struct bno055_linear_accel_double_t d_linear_accel_xyz;
-double vel_x = 0;
-double pos_x = 0;
+struct bno055_linear_accel_double_t accel_xyz_input = {0};
+struct bno055_linear_accel_double_t accel_xyz[2] = {0};
+struct bno055_linear_accel_double_t veloc_xyz[2] = {0};
+struct bno055_linear_accel_double_t posit_xyz[2] = {0};
 unsigned int read_counter = 0;
 char float_str[12];
 uint8_t proc_flag = 0;
@@ -111,16 +114,40 @@ void loop()
 	{
 		if (calibrated)
 		{
-			vel_x += (d_linear_accel_xyz.x * 0.01);
-			pos_x += (vel_x * 0.01);
-			if (read_counter%16 == 0)
+			if (read_counter%FILTER_WINDOW == 0)
 			{
-				dtostrf(d_linear_accel_xyz.x, 10, 8, float_str);
+				accel_xyz[1].x = accel_xyz[1].x/FILTER_WINDOW;
+				accel_xyz[1].y = accel_xyz[1].y/FILTER_WINDOW;
+				accel_xyz[1].z = accel_xyz[1].z/FILTER_WINDOW;
+
+				// Calculate velocity (single integration)
+				veloc_xyz[1].x = veloc_xyz[0].x + (((accel_xyz[0].x + accel_xyz[1].x)/2.0)*(FILTER_WINDOW*0.01));
+				// Calculate position (double integration)
+				posit_xyz[1].x = posit_xyz[0].x + ((veloc_xyz[0].x + veloc_xyz[1].x)/2.0);
+
+				// Output current data
+				dtostrf(accel_xyz[1].x, 10, 8, float_str);
 				printf("%u\t%s\t", read_counter, float_str);
-				dtostrf(vel_x, 10, 8, float_str);
+				dtostrf(veloc_xyz[1].x, 10, 8, float_str);
 				printf("%s\t", float_str);
-				dtostrf(pos_x, 10, 8, float_str);
+				dtostrf(posit_xyz[1].x, 10, 8, float_str);
 				printf("%s\n", float_str);
+
+				// Rotate back
+				accel_xyz[0] = accel_xyz[1];
+				veloc_xyz[0] = veloc_xyz[1];
+				posit_xyz[0] = posit_xyz[1];
+
+				accel_xyz[1].x = 0;
+				accel_xyz[1].y = 0;
+				accel_xyz[1].z = 0;
+			}
+			else
+			{
+				// Build acceleration filter
+				accel_xyz[1].x = accel_xyz[1].x + accel_xyz_input.x;
+				accel_xyz[1].y = accel_xyz[1].y + accel_xyz_input.y;
+				accel_xyz[1].z = accel_xyz[1].z + accel_xyz_input.z;
 			}
 			PORTB = (1<<PB1);
 		}
@@ -162,7 +189,7 @@ ISR(TIMER0_COMPB_vect)
 	if (accel_calib_status == 3 && gyro_calib_status == 3 && mag_calib_status == 3 && err == 0)
 	{
 		calibrated = 1;
-		bno055_convert_double_linear_accel_xyz_msq(&d_linear_accel_xyz);
+		bno055_convert_double_linear_accel_xyz_msq(&accel_xyz_input);
 	}
 	else
 	{
