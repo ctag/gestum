@@ -90,6 +90,19 @@ void setup()
 	err=bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
 	printf("Set bno operating mode: %d\n", err);
 
+	_delay_ms(650); // Some sort of POR setup time..?
+
+	do
+	{
+		err = 0;
+		err+=bno055_get_accel_calib_stat(&accel_calib_status);
+		err+=bno055_get_mag_calib_stat(&mag_calib_status);
+		err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
+		err+=bno055_get_sys_calib_stat(&sys_calib_status);
+		printf("Waiting on calibration: %d, %d, %d, %d....\n", accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status);
+		_delay_ms(500);
+	} while (accel_calib_status != 3 || gyro_calib_status != 3 || mag_calib_status != 3 || err != 0);
+
 //	struct bno055_euler_float_t eulerData;
 //	bno055_convert_float_euler_hpr_deg(&eulerData);
 	sei();
@@ -118,7 +131,7 @@ void loop()
 				dtostrf(pos_x, 10, 8, float_str);
 				printf("%s\n", float_str);
 			}
-			PORTB = 0x00;
+			PORTB = (1<<PB1);
 		}
 		proc_flag = 0;
 	}
@@ -147,11 +160,11 @@ ISR(TIMER0_COMPB_vect)
 {
 	int8_t err = 0;
 	proc_flag = 1;
-	PORTB = (1<<PB1);
+	PORTB = 0x00;
 	read_counter++;
 
 	err+=bno055_get_accel_calib_stat(&accel_calib_status);
-	err+= bno055_get_mag_calib_stat(&mag_calib_status);
+	err+=bno055_get_mag_calib_stat(&mag_calib_status);
 	err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
 	err+=bno055_get_sys_calib_stat(&sys_calib_status);
 
