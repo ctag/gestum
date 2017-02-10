@@ -123,7 +123,7 @@ void loop()
 				// Calculate velocity (single integration)
 				veloc_xyz[1].x = veloc_xyz[0].x + (((accel_xyz[0].x + accel_xyz[1].x)/2.0)*(FILTER_WINDOW*0.01));
 				// Calculate position (double integration)
-				posit_xyz[1].x = posit_xyz[0].x + ((veloc_xyz[0].x + veloc_xyz[1].x)/2.0);
+				posit_xyz[1].x = posit_xyz[0].x + (((veloc_xyz[0].x + veloc_xyz[1].x)/2.0)*(FILTER_WINDOW*0.01));
 
 				// Output current data
 				dtostrf(accel_xyz[1].x, 10, 8, float_str);
