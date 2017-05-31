@@ -19,5 +19,6 @@
 #include "avr-usart.h"
 #include "avr-printf.h"
 #include "bno055.h"
+#include "linked-list.h"
 
 #endif // MAIN_H

@@ -28,6 +28,7 @@
 					<Add directory="lib/avr-i2c" />
 					<Add directory="lib/avr-keys" />
 					<Add directory="lib/BNO055_driver" />
+					<Add directory="lib/linked-list" />
 				</Compiler>
 				<Linker>
 					<Add option="-Wl,--gc-sections" />
@@ -84,6 +85,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="lib/avr-usart/avr-usart.h" />
+		<Unit filename="lib/linked-list/linked-list.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/linked-list/linked-list.h" />
 		<Unit filename="src/fuse.c">
 			<Option compilerVar="CC" />
 		</Unit>
