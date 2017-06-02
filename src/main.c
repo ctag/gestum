@@ -12,9 +12,9 @@ const uint8_t tca_addr_list_len = 8;
 const uint8_t tca_addr_list[] = {0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77};
 
 const uint8_t bno_addr_list_len = 2;
-const uint8_t bno_addr_list[] = {0x28, 0x29};
+const uint8_t bno_addr_list[] = {BNO055_I2C_ADDR1, BNO055_I2C_ADDR2};
 
-struct bnoList_t * root = NULL;
+struct bno055_t myBNO;
 
 uint8_t accel_calib_status = 0;
 uint8_t gyro_calib_status = 0;
@@ -42,7 +42,7 @@ uint8_t tcaselect(uint8_t tca_addr, uint8_t mux) {
 	uint8_t err = 0;
 	if (mux > 7) return 1;
 
-	err = i2c_start((TCAADDR<<1)+I2C_WRITE);
+	err = i2c_start(tca_addr, I2C_WRITE);
 	err += i2c_write(1 << mux);
 	i2c_stop();
 
@@ -75,7 +75,6 @@ void led_disable()
     TCCR2B = 0x00;
 }
 
-
 /* Init
  * This function is kept over from the Arduino library for no reason.
  * I have arbitrarily decided that it will be used to initialize
@@ -107,20 +106,17 @@ void setup()
 
 	usart_init();
 	init_printf(NULL, usart_putchar);
-	//printf("Printf init.\n");
+	printf("Printf init.\n");
 	i2c_init();
-	//printf("i2c init.\n");
+	printf("i2c init.\n");
 
 	_delay_ms(1000); // POR setup time from datasheet
-
-//	struct bno055_t * bno = malloc(sizeof(struct bno055_t));
-//
-//	err=bno055_init(bno);
 
 	for (uint8_t tca_i = 0; tca_i < tca_addr_list_len; tca_i++)
 	{
 		printf("Checking TCA address 0x%02X\n", tca_addr_list[tca_i]);
-		err=i2c_start(tca_addr_list[tca_i]<<1);
+		err=i2c_start(tca_addr_list[tca_i], I2C_READ);
+		i2c_stop();
 		if (err)
 		{
 			printf("\tNo TCA found.\n");
@@ -128,48 +124,98 @@ void setup()
 		}
 		for (uint8_t mux_i = 0; mux_i < 8; mux_i++)
 		{
-			_delay_ms(10);
-			printf("Testing mux index %d\n", mux_i);
 			tcaselect(tca_addr_list[tca_i], mux_i);
 			for (uint8_t bno_i = 0; bno_i < bno_addr_list_len; bno_i++)
 			{
-				err=i2c_start(bno_addr_list[bno_i]<<1);
-				if (err)
+				err=i2c_start(bno_addr_list[bno_i], I2C_READ);
+				i2c_stop();
+				if (!err)
 				{
-					printf("\t0x%02X no BNO.\n", bno_addr_list[bno_i]);
-				}
-				else
-				{
-					printf("\t0x%02X found BNO!\n", bno_addr_list[bno_i]);
+					struct bnoList_t * newBno = bnoList_append(tca_addr_list[tca_i], mux_i, bno_addr_list[bno_i]);
+					printf("Found BNO 0x%02X at index %d on TCA 0x%02X\n", newBno->bnoPtr->dev_addr, newBno->tca_index, newBno->tca_addr);
 				}
 			}
 		}
 	}
 
-	while (1);
-
-	/*for (uint8_t i = 0; i < 3; ++i)
+	if (!root)
 	{
-		tcaselect(i);
-		err=bno055_init(&myBNO);
-		//printf("bno init: %d\n", err);
-		err=bno055_set_power_mode(BNO055_POWER_MODE_NORMAL);
-		//printf("bno power mode: %d\n", err);
-		err=bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
-		//printf("Set bno operating mode: %d\n", err);
+		printf("No BNO055's detected. Connect them and reboot system.\n");
+		while(1);
+	}
+	else
+	{
+		struct bnoList_t * tmpBno = root;
+		while (tmpBno)
+		{
+			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr>>1, tmpBno->tca_addr);
+
+			tcaselect(tmpBno->tca_addr, tmpBno->tca_index);
+			err=bno055_init(tmpBno->bnoPtr);
+			printf("bno init: %d\n", err);
+			err+=bno055_set_power_mode(BNO055_POWER_MODE_NORMAL);
+			printf("bno power mode: %d\n", err);
+			err+=bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
+			printf("Set bno operating mode: %d\n", err);
+			if (err)
+			{
+				printf("\tError initializing BNO %d... Cycle power to system.\n", tmpBno->tca_index);
+				while(1);
+			}
+
+			do
+			{
+//				led_set(25, 25, 0);
+				printf("\nCalibrating sensor %d:\n", tmpBno->tca_index);
+				err=bno055_get_accel_calib_stat(&accel_calib_status);
+				printf("\tAccel: %d [%d]\n", accel_calib_status, err);
+				err=bno055_get_mag_calib_stat(&mag_calib_status);
+				printf("\tMag: %d [%d]\n", mag_calib_status, err);
+				err=bno055_get_gyro_calib_stat(&gyro_calib_status);
+				printf("\tGyro: %d [%d]\n", gyro_calib_status, err);
+				err=bno055_get_sys_calib_stat(&sys_calib_status);
+				printf("\tSys: %d [%d]\n", sys_calib_status, err);
+				_delay_ms(500);
+			} while (sys_calib_status != 3 || err != 0);
+
+			tmpBno = tmpBno->nextPtr;
+		}
 	}
 
-	do
-	{
-		led_set(25, 25, 0);
-		err = 0;
-		err+=bno055_get_accel_calib_stat(&accel_calib_status);
-		err+=bno055_get_mag_calib_stat(&mag_calib_status);
-		err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
-		err+=bno055_get_sys_calib_stat(&sys_calib_status);
-		//printf("Waiting on calibration: %d, %d, %d, %d....\n", accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status);
-		_delay_ms(500);
-	} while (sys_calib_status != 3 || err != 0);*/
+	while (1);
+
+//struct bnoList_t * newBno = bnoList_append(tca_addr_list[0], 0, bno_addr_list[0]);
+//printf("Created bno node.\n");
+//
+////	for (uint8_t i = 0; i < 3; ++i)
+////	{
+//
+//		err=tcaselect(0x70, 0);
+//		if (err) printf("tca select error: 0x%02X\n", err);
+//
+//		err=bno055_init(newBno->bnoPtr);
+//		printf("bno init: %d\n", err);
+//		err=bno055_set_power_mode(BNO055_POWER_MODE_NORMAL);
+//		printf("bno power mode: %d\n", err);
+//		err=bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
+//		printf("Set bno operating mode: %d\n", err);
+////	}
+//
+//	do
+//	{
+////		led_set(25, 25, 0);
+//		err = 0;
+////		err+=bno055_get_accel_calib_stat(&accel_calib_status);
+////		err+=bno055_get_mag_calib_stat(&mag_calib_status);
+////		err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
+//		err+=bno055_get_sys_calib_stat(&sys_calib_status);
+//		printf("Calibrating sensor %d:\t%d, %d, %d, %d [%d]\n", 0,
+//						accel_calib_status, mag_calib_status,
+//						gyro_calib_status, sys_calib_status, err);
+//		_delay_ms(500);
+//	} while (1||sys_calib_status != 3 || err != 0);
+//
+//	while(1);
 
 	sei();
 	led_set(0, 25, 0);
@@ -265,11 +311,11 @@ void loop()
 //	printf("Calibration:\n\tAccel: 0x%02X\n\tMag: 0x%02X\n\tGyro: 0x%02X\n\tSys: 0x%02X\n\tError: %d\n", accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status, err);
 //	printf("Linear Accel: %d, %d, %d\n", (int)d_linear_accel_xyz.x, (int)d_linear_accel_xyz.y, (int)d_linear_accel_xyz.z);
 
-	proc_input();
+//	proc_input();
 
 	if (proc_flag)
 	{
-		if (calibrated)
+		if (calibrated||1)
 		{
 //			if (read_counter%FILTER_WINDOW == 0)
 //			{
@@ -352,7 +398,7 @@ ISR(TIMER0_COMPB_vect)
 //	}
 //	interrupt_count = 0;
 //
-//	proc_flag = 1;
+	proc_flag = 1;
 ////	PORTB = 0x00;
 //	read_counter++;
 
