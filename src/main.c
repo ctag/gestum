@@ -14,6 +14,8 @@ const uint8_t tca_addr_list[] = {0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77}
 const uint8_t bno_addr_list_len = 2;
 const uint8_t bno_addr_list[] = {BNO055_I2C_ADDR1, BNO055_I2C_ADDR2};
 
+struct bnoList_t * tmpBno;
+
 struct bno055_t myBNO;
 
 uint8_t accel_calib_status = 0;
@@ -102,7 +104,7 @@ void setup()
 	cli();
 	wdt_disable();
 
-	//led_set(25, 0, 0);
+	led_set(25, 25, 0);
 
 	usart_init();
 	init_printf(NULL, usart_putchar);
@@ -140,6 +142,7 @@ void setup()
 
 	if (!root)
 	{
+		led_set(25, 0, 0);
 		printf("No BNO055's detected. Connect them and reboot system.\n");
 		while(1);
 	}
@@ -148,7 +151,7 @@ void setup()
 		struct bnoList_t * tmpBno = root;
 		while (tmpBno)
 		{
-			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr>>1, tmpBno->tca_addr);
+			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr, tmpBno->tca_addr);
 
 			tcaselect(tmpBno->tca_addr, tmpBno->tca_index);
 			err=bno055_init(tmpBno->bnoPtr);
@@ -377,6 +380,7 @@ int main(void)
 
     setup();
 
+    tmpBno = root;
     for (;;)
     {
         loop();
