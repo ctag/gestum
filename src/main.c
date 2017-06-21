@@ -22,13 +22,7 @@ uint8_t accel_calib_status = 0;
 uint8_t gyro_calib_status = 0;
 uint8_t mag_calib_status = 0;
 uint8_t sys_calib_status = 0;
-//struct bno055_accel_double_t d_accel_xyz;
-//struct bno055_linear_accel_double_t accel_xyz_input = {0};
-//struct bno055_linear_accel_double_t accel_xyz[2] = {0};
-//struct bno055_linear_accel_double_t veloc_xyz[2] = {0};
-//struct bno055_linear_accel_double_t posit_xyz[2] = {0};
 
-struct bno055_euler_float_t euler_hpr = {0};
 struct bno055_quaternion_t quat = {0};
 
 unsigned int read_counter = 0;
@@ -85,16 +79,8 @@ void led_disable()
  */
 void init ()
 {
-	// Pin setup
-	DDRB = (1 << PB1) | (1 << PB2); // Set as output
-	DDRD = (1 << PD6); // Set as output
-
-	// Timer0B setup
-	TCCR0B = (1 << CS02) | (1 << CS00);
-	TCNT0 = 0;
-	OCR0B = 156; // 10ms polling
-	TIMSK0 = (1<< OCIE0B);
-
+	// LED pin setup
+	DDRB = (1<<PIN1) | (1<<PIN2) | (1<<PIN3);
 	led_enable();
 	led_set(0, 0, 0);
 }
@@ -109,20 +95,20 @@ void setup()
 
 	usart_init();
 	init_printf(NULL, usart_putchar);
-	printf("Printf init.\n");
+//	printf("Printf init.\n");
 	i2c_init();
-	printf("i2c init.\n");
+//	printf("i2c init.\n");
 
 	_delay_ms(1000); // POR setup time from datasheet
 
 	for (uint8_t tca_i = 0; tca_i < tca_addr_list_len; tca_i++)
 	{
-		printf("Checking TCA address 0x%02X\n", tca_addr_list[tca_i]);
+//		printf("Checking TCA address 0x%02X\n", tca_addr_list[tca_i]);
 		err=i2c_start(tca_addr_list[tca_i], I2C_READ);
 		i2c_stop();
 		if (err)
 		{
-			printf("\tNo TCA found.\n");
+//			printf("\tNo TCA found.\n");
 			continue;
 		}
 		for (uint8_t mux_i = 0; mux_i < 8; mux_i++)
@@ -134,8 +120,8 @@ void setup()
 				i2c_stop();
 				if (!err)
 				{
-					struct bnoList_t * newBno = bnoList_append(tca_addr_list[tca_i], mux_i, bno_addr_list[bno_i]);
-					printf("Found BNO 0x%02X at index %d on TCA 0x%02X\n", newBno->bnoPtr->dev_addr, newBno->tca_index, newBno->tca_addr);
+					bnoList_append(tca_addr_list[tca_i], mux_i, bno_addr_list[bno_i]);
+//					printf("Found BNO 0x%02X at index %d on TCA 0x%02X\n", newBno->bnoPtr->dev_addr, newBno->tca_index, newBno->tca_addr);
 				}
 			}
 		}
@@ -144,7 +130,7 @@ void setup()
 	if (!root)
 	{
 		led_set(25, 0, 0);
-		printf("No BNO055's detected. Connect them and reboot system.\n");
+//		printf("No BNO055's detected. Connect them and reboot system.\n");
 		while(1);
 	}
 	else
@@ -152,104 +138,48 @@ void setup()
 		struct bnoList_t * tmpBno = root;
 		while (tmpBno)
 		{
-			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr, tmpBno->tca_addr);
-
+//			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr, tmpBno->tca_addr);
 			tcaselect(tmpBno->tca_addr, tmpBno->tca_index);
 			err=bno055_init(tmpBno->bnoPtr);
-			printf("bno init: %d\n", err);
+//			printf("bno init: %d\n", err);
 			err+=bno055_set_power_mode(BNO055_POWER_MODE_NORMAL);
-			printf("bno power mode: %d\n", err);
+//			printf("bno power mode: %d\n", err);
 			err+=bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
-			printf("Set bno operating mode: %d\n", err);
+//			printf("Set bno operating mode: %d\n", err);
 			if (err)
 			{
-				printf("\tError initializing BNO %d... Cycle power to system.\n", tmpBno->tca_index);
+//				printf("\tError initializing BNO %d... Cycle power to system.\n", tmpBno->tca_index);
 				while(1);
 			}
 
 			do
 			{
 //				led_set(25, 25, 0);
-				printf("\nCalibrating sensor %d:\n", tmpBno->tca_index);
+//				printf("\nCalibrating sensor %d:\n", tmpBno->tca_index);
 				err=bno055_get_accel_calib_stat(&accel_calib_status);
-				printf("\tAccel: %d [%d]\n", accel_calib_status, err);
+//				printf("\tAccel: %d [%d]\n", accel_calib_status, err);
 				err=bno055_get_mag_calib_stat(&mag_calib_status);
-				printf("\tMag: %d [%d]\n", mag_calib_status, err);
+//				printf("\tMag: %d [%d]\n", mag_calib_status, err);
 				err=bno055_get_gyro_calib_stat(&gyro_calib_status);
-				printf("\tGyro: %d [%d]\n", gyro_calib_status, err);
+//				printf("\tGyro: %d [%d]\n", gyro_calib_status, err);
 				err=bno055_get_sys_calib_stat(&sys_calib_status);
-				printf("\tSys: %d [%d]\n", sys_calib_status, err);
-				_delay_ms(500);
+//				printf("\tSys: %d [%d]\n", sys_calib_status, err);
+//				_delay_ms(500);
 			} while (sys_calib_status != 3 || err != 0);
 
 			tmpBno = tmpBno->nextPtr;
 		}
 	}
 
-//	while (1);
-
-//struct bnoList_t * newBno = bnoList_append(tca_addr_list[0], 0, bno_addr_list[0]);
-//printf("Created bno node.\n");
-//
-////	for (uint8_t i = 0; i < 3; ++i)
-////	{
-//
-//		err=tcaselect(0x70, 0);
-//		if (err) printf("tca select error: 0x%02X\n", err);
-//
-//		err=bno055_init(newBno->bnoPtr);
-//		printf("bno init: %d\n", err);
-//		err=bno055_set_power_mode(BNO055_POWER_MODE_NORMAL);
-//		printf("bno power mode: %d\n", err);
-//		err=bno055_set_operation_mode(BNO055_OPERATION_MODE_NDOF);
-//		printf("Set bno operating mode: %d\n", err);
-////	}
-//
-//	do
-//	{
-////		led_set(25, 25, 0);
-//		err = 0;
-////		err+=bno055_get_accel_calib_stat(&accel_calib_status);
-////		err+=bno055_get_mag_calib_stat(&mag_calib_status);
-////		err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
-//		err+=bno055_get_sys_calib_stat(&sys_calib_status);
-//		printf("Calibrating sensor %d:\t%d, %d, %d, %d [%d]\n", 0,
-//						accel_calib_status, mag_calib_status,
-//						gyro_calib_status, sys_calib_status, err);
-//		_delay_ms(500);
-//	} while (1||sys_calib_status != 3 || err != 0);
-//
-//	while(1);
-
 	sei();
 	led_set(0, 25, 0);
-}
-
-uint8_t get_euler()
-{
-	uint8_t err = 0;
-	err+=bno055_get_accel_calib_stat(&accel_calib_status);
-	err+=bno055_get_mag_calib_stat(&mag_calib_status);
-	err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
-	err+=bno055_get_sys_calib_stat(&sys_calib_status);
-
-	if (sys_calib_status == 3 && err == 0)
-	{
-		bno055_convert_float_euler_hpr_deg(&euler_hpr);
-		return 0;
-	}
-	else
-	{
-//		printf("Device uncalibrated.\n");
-		return 1;
-	}
 }
 
 uint8_t get_quaternion()
 {
 	uint8_t err = 0;
-	err+=bno055_get_accel_calib_stat(&accel_calib_status);
-	err+=bno055_get_mag_calib_stat(&mag_calib_status);
+//	err+=bno055_get_accel_calib_stat(&accel_calib_status);
+//	err+=bno055_get_mag_calib_stat(&mag_calib_status);
 	err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
 	err+=bno055_get_sys_calib_stat(&sys_calib_status);
 
@@ -333,92 +263,7 @@ void proc_input()
  */
 void loop()
 {
-//	printf("Calibration:\n\tAccel: 0x%02X\n\tMag: 0x%02X\n\tGyro: 0x%02X\n\tSys: 0x%02X\n\tError: %d\n", accel_calib_status, mag_calib_status, gyro_calib_status, sys_calib_status, err);
-//	printf("Linear Accel: %d, %d, %d\n", (int)d_linear_accel_xyz.x, (int)d_linear_accel_xyz.y, (int)d_linear_accel_xyz.z);
-
-//	proc_input();
-
-	if (proc_flag)
-	{
-		if (calibrated||1)
-		{
-//			if (read_counter%FILTER_WINDOW == 0)
-//			{
-//				accel_xyz[1].x = accel_xyz[1].x/FILTER_WINDOW;
-//				accel_xyz[1].y = accel_xyz[1].y/FILTER_WINDOW;
-//				accel_xyz[1].z = accel_xyz[1].z/FILTER_WINDOW;
-//
-//				// Calculate velocity (single integration)
-//				veloc_xyz[1].x = veloc_xyz[0].x + (((accel_xyz[0].x + accel_xyz[1].x)/2.0)*(FILTER_WINDOW*0.01));
-//				// Calculate position (double integration)
-//				posit_xyz[1].x = posit_xyz[0].x + (((veloc_xyz[0].x + veloc_xyz[1].x)/2.0)*(FILTER_WINDOW*0.01));
-//
-//				// Output current data
-//				dtostrf(accel_xyz[1].x, 10, 8, float_str);
-//				printf("%u\t%s\t", read_counter, float_str);
-//				dtostrf(veloc_xyz[1].x, 10, 8, float_str);
-//				printf("%s\t", float_str);
-//				dtostrf(posit_xyz[1].x, 10, 8, float_str);
-//				printf("%s\n", float_str);
-//
-//				// Rotate back
-//				accel_xyz[0] = accel_xyz[1];
-//				veloc_xyz[0] = veloc_xyz[1];
-//				posit_xyz[0] = posit_xyz[1];
-//
-//				accel_xyz[1].x = 0;
-//				accel_xyz[1].y = 0;
-//				accel_xyz[1].z = 0;
-//			}
-//			else
-//			{
-//				// Build acceleration filter
-//				accel_xyz[1].x = accel_xyz[1].x + accel_xyz_input.x;
-//				accel_xyz[1].y = accel_xyz[1].y + accel_xyz_input.y;
-//				accel_xyz[1].z = accel_xyz[1].z + accel_xyz_input.z;
-//			}
-//			PORTB = (1<<PB1);
-
-
-//			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr, tmpBno->tca_addr);
-
-			tcaselect(tmpBno->tca_addr, tmpBno->tca_index);
-
-//			printf("%d %d %d %d\n", sizeof(char), sizeof(0xc0), sizeof(float), sizeof(uint8_t));
-
-//			usart_putchar(NULL, 0x00);
-//			usart_putchar(NULL, 0xFF);
-//			usart_putchar(NULL, (euler_hpr.h>>3)&0xFF);
-//			usart_putchar(NULL, euler_hpr.h>>2&0xFF);
-//			usart_putchar(NULL, euler_hpr.h>>1&0xFF);
-//			usart_putchar(NULL, euler_hpr.h&0xFF);
-
-			get_quaternion();
-
-			printf("0x%04X 0x%04X 0x%04X 0x%04X \t %d\n", quat.w, quat.x, quat.y, quat.z, gyro_calib_status);
-
-//			get_euler();
-			// Output current data
-
-//			printf("0x%02X 0x%02X 0x%02X\n", euler_hpr.h, euler_hpr.r, euler_hpr.p);
-//			dtostrf(euler_hpr.h, 6, 4, float_str);
-//			printf("%u\t%s\t", read_counter, float_str);
-//			dtostrf(euler_hpr.r, 6, 4, float_str);
-//			printf("%s\t", float_str);
-//			dtostrf(euler_hpr.p, 6, 4, float_str);
-//			printf("%s\n", float_str);
-
-			tmpBno = tmpBno->nextPtr;
-			if (!tmpBno)
-			{
-				tmpBno = root;
-			}
-
-		}
-		cli();
-		proc_flag = 0;
-		sei();
-	}
+	proc_input();
 }
 
 /* Main
@@ -438,26 +283,6 @@ int main(void)
     }
 
     return 0;
-}
-
-// Interrupt vector
-ISR(TIMER0_COMPB_vect)
-{
-//	int8_t err = 0;
-//
-	interrupt_count++;
-
-	if (interrupt_count < 10)
-	{
-		return;
-	}
-	interrupt_count = 0;
-
-	proc_flag = 1;
-////	PORTB = 0x00;
-//	read_counter++;
-
-
 }
 
 
