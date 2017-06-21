@@ -36,7 +36,7 @@ uint8_t proc_flag = 0;
 uint8_t calibrated = 0;
 uint8_t interrupt_count = 0;
 
-char input_buffer[16] = {0};
+unsigned char input_buffer[16] = {0};
 uint8_t input_index = 0;
 uint8_t input_timeout = 0;
 
