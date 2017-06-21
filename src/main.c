@@ -394,14 +394,14 @@ ISR(TIMER0_COMPB_vect)
 {
 //	int8_t err = 0;
 //
-//	interrupt_count++;
-//
-//	if (interrupt_count < 10)
-//	{
-//		return;
-//	}
-//	interrupt_count = 0;
-//
+	interrupt_count++;
+
+	if (interrupt_count < 10)
+	{
+		return;
+	}
+	interrupt_count = 0;
+
 	proc_flag = 1;
 ////	PORTB = 0x00;
 //	read_counter++;
