@@ -4,105 +4,72 @@
 	<ActiveTarget name="Debug" />
 	<File name="lib/BNO055_driver/bno055.h" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="80884" topLine="1924" />
+			<Cursor1 position="21626" topLine="502" />
 		</Cursor>
 		<Folding>
 			<Collapse line="0" />
 			<Collapse line="54" />
 			<Collapse line="62" />
-			<Collapse line="72" />
-			<Collapse line="93" />
-			<Collapse line="99" />
-			<Collapse line="119" />
-			<Collapse line="125" />
-			<Collapse line="142" />
-			<Collapse line="147" />
-			<Collapse line="154" />
-			<Collapse line="183" />
-			<Collapse line="198" />
-			<Collapse line="219" />
-			<Collapse line="223" />
-			<Collapse line="230" />
-			<Collapse line="257" />
-			<Collapse line="272" />
-			<Collapse line="515" />
-			<Collapse line="519" />
-			<Collapse line="532" />
-			<Collapse line="536" />
-			<Collapse line="541" />
-			<Collapse line="545" />
-			<Collapse line="550" />
-			<Collapse line="554" />
-			<Collapse line="559" />
-			<Collapse line="563" />
-			<Collapse line="568" />
-			<Collapse line="572" />
-			<Collapse line="578" />
-			<Collapse line="582" />
-			<Collapse line="587" />
-			<Collapse line="591" />
-			<Collapse line="597" />
-			<Collapse line="601" />
-			<Collapse line="606" />
-			<Collapse line="610" />
-			<Collapse line="615" />
-			<Collapse line="619" />
-			<Collapse line="624" />
-			<Collapse line="628" />
-			<Collapse line="633" />
-			<Collapse line="637" />
-			<Collapse line="642" />
-			<Collapse line="646" />
-			<Collapse line="653" />
-			<Collapse line="657" />
-			<Collapse line="662" />
-			<Collapse line="666" />
-			<Collapse line="671" />
-			<Collapse line="675" />
-			<Collapse line="680" />
-			<Collapse line="684" />
-			<Collapse line="689" />
-			<Collapse line="693" />
-			<Collapse line="698" />
-			<Collapse line="702" />
-			<Collapse line="708" />
-			<Collapse line="712" />
-			<Collapse line="718" />
-			<Collapse line="722" />
-			<Collapse line="727" />
-			<Collapse line="731" />
-			<Collapse line="737" />
-			<Collapse line="741" />
+			<Collapse line="75" />
+			<Collapse line="96" />
+			<Collapse line="102" />
+			<Collapse line="122" />
+			<Collapse line="128" />
+			<Collapse line="145" />
+			<Collapse line="150" />
+			<Collapse line="157" />
+			<Collapse line="186" />
+			<Collapse line="201" />
+			<Collapse line="222" />
+			<Collapse line="226" />
+			<Collapse line="233" />
+			<Collapse line="260" />
+			<Collapse line="275" />
 		</Folding>
 	</File>
-	<File name="lib/avr-i2c/avr-i2c.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lib/linked-list/linked-list.c" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="551" topLine="0" />
+			<Cursor1 position="213" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="src/main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lib/linked-list/linked-list.h" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3096" topLine="111" />
+			<Cursor1 position="279" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="lib/avr-i2c/avr-i2c.c" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lib/avr-usart/avr-usart.h" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3122" topLine="293" />
+			<Cursor1 position="0" topLine="13" />
 		</Cursor>
 	</File>
-	<File name="src/main.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src/main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="299" topLine="0" />
+			<Cursor1 position="4325" topLine="148" />
 		</Cursor>
 	</File>
-	<File name="lib/BNO055_driver/bno055.c" open="1" top="1" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="src/main.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="7241" topLine="176" />
+			<Cursor1 position="292" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="lib/avr-i2c/avr-i2c.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="373" topLine="12" />
+		</Cursor>
+	</File>
+	<File name="lib/BNO055_driver/bno055.c" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="207743" topLine="6624" />
 		</Cursor>
 	</File>
 	<File name="lib/avr-usart/avr-usart.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3503" topLine="221" />
+			<Cursor1 position="2799" topLine="134" />
+		</Cursor>
+	</File>
+	<File name="lib/avr-i2c/avr-i2c.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6607" topLine="302" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

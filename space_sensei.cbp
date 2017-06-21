@@ -21,6 +21,7 @@
 					<Add option="-std=gnu++11" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
+					<Add option="-Wpointer-compare" />
 					<Add directory="lib/avr-sha1" />
 					<Add directory="lib/avr-printf" />
 					<Add directory="lib/avr-usart" />
