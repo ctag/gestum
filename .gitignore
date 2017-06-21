@@ -2,6 +2,9 @@
 bin/
 obj/
 
+# 3d
+*.stl
+
 # PlatformIO items
 .pioenvs
 .clang_complete
