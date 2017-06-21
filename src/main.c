@@ -29,6 +29,7 @@ uint8_t sys_calib_status = 0;
 //struct bno055_linear_accel_double_t posit_xyz[2] = {0};
 
 struct bno055_euler_float_t euler_hpr = {0};
+struct bno055_quaternion_t quat = {0};
 
 unsigned int read_counter = 0;
 char float_str[12];
@@ -185,7 +186,7 @@ void setup()
 		}
 	}
 
-	while (1);
+//	while (1);
 
 //struct bnoList_t * newBno = bnoList_append(tca_addr_list[0], 0, bno_addr_list[0]);
 //printf("Created bno node.\n");
@@ -243,6 +244,27 @@ uint8_t get_euler()
 		return 1;
 	}
 }
+
+uint8_t get_quaternion()
+{
+	uint8_t err = 0;
+	err+=bno055_get_accel_calib_stat(&accel_calib_status);
+	err+=bno055_get_mag_calib_stat(&mag_calib_status);
+	err+=bno055_get_gyro_calib_stat(&gyro_calib_status);
+	err+=bno055_get_sys_calib_stat(&sys_calib_status);
+
+	if (gyro_calib_status >= 2 && err == 0)
+	{
+		bno055_read_quaternion_wxyz(&quat);
+		return 0;
+	}
+	else
+	{
+//		printf("Device uncalibrated.\n");
+		return 1;
+	}
+}
+
 
 uint8_t checksum_valid()
 {
@@ -357,16 +379,45 @@ void loop()
 //			}
 //			PORTB = (1<<PB1);
 
+
+//			printf("Bno: %d; 0x%02X addr at TCA 0x%02X\n", tmpBno->tca_index, tmpBno->bnoPtr->dev_addr, tmpBno->tca_addr);
+
+			tcaselect(tmpBno->tca_addr, tmpBno->tca_index);
+
+//			printf("%d %d %d %d\n", sizeof(char), sizeof(0xc0), sizeof(float), sizeof(uint8_t));
+
+//			usart_putchar(NULL, 0x00);
+//			usart_putchar(NULL, 0xFF);
+//			usart_putchar(NULL, (euler_hpr.h>>3)&0xFF);
+//			usart_putchar(NULL, euler_hpr.h>>2&0xFF);
+//			usart_putchar(NULL, euler_hpr.h>>1&0xFF);
+//			usart_putchar(NULL, euler_hpr.h&0xFF);
+
+			get_quaternion();
+
+			printf("0x%04X 0x%04X 0x%04X 0x%04X \t %d\n", quat.w, quat.x, quat.y, quat.z, gyro_calib_status);
+
+//			get_euler();
 			// Output current data
-			dtostrf(euler_hpr.h, 6, 4, float_str);
-			printf("%u\t%s\t", read_counter, float_str);
-			dtostrf(euler_hpr.r, 6, 4, float_str);
-			printf("%s\t", float_str);
-			dtostrf(euler_hpr.p, 6, 4, float_str);
-			printf("%s\n", float_str);
+
+//			printf("0x%02X 0x%02X 0x%02X\n", euler_hpr.h, euler_hpr.r, euler_hpr.p);
+//			dtostrf(euler_hpr.h, 6, 4, float_str);
+//			printf("%u\t%s\t", read_counter, float_str);
+//			dtostrf(euler_hpr.r, 6, 4, float_str);
+//			printf("%s\t", float_str);
+//			dtostrf(euler_hpr.p, 6, 4, float_str);
+//			printf("%s\n", float_str);
+
+			tmpBno = tmpBno->nextPtr;
+			if (!tmpBno)
+			{
+				tmpBno = root;
+			}
 
 		}
+		cli();
 		proc_flag = 0;
+		sei();
 	}
 }
 
