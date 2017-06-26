@@ -14,8 +14,6 @@ const uint8_t tca_addr_list[] = {0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77}
 const uint8_t bno_addr_list_len = 2;
 const uint8_t bno_addr_list[] = {BNO055_I2C_ADDR1, BNO055_I2C_ADDR2};
 
-struct bnoList_t * tmpBno;
-
 struct bno055_t myBNO;
 
 uint8_t accel_calib_status = 0;
@@ -34,6 +32,8 @@ uint8_t interrupt_count = 0;
 unsigned char input_buffer[16] = {0};
 uint8_t input_index = 0;
 uint8_t input_timeout = 0;
+
+void send_packet(uint8_t opcode, uint8_t len, uint8_t * data);
 
 uint8_t tcaselect(uint8_t tca_addr, uint8_t mux) {
 	uint8_t err = 0;
@@ -91,7 +91,7 @@ void setup()
 	cli();
 	wdt_disable();
 
-	led_set(25, 25, 0);
+	led_set(5, 5, 0);
 
 	usart_init();
 	init_printf(NULL, usart_putchar);
@@ -100,6 +100,8 @@ void setup()
 //	printf("i2c init.\n");
 
 	_delay_ms(1000); // POR setup time from datasheet
+
+	led_set(25, 25, 0);
 
 	for (uint8_t tca_i = 0; tca_i < tca_addr_list_len; tca_i++)
 	{
@@ -148,6 +150,7 @@ void setup()
 //			printf("Set bno operating mode: %d\n", err);
 			if (err)
 			{
+				led_set(25, 0, 0);
 //				printf("\tError initializing BNO %d... Cycle power to system.\n", tmpBno->tca_index);
 				while(1);
 			}
@@ -195,12 +198,11 @@ uint8_t get_quaternion()
 	}
 }
 
-
 uint8_t checksum_valid()
 {
 	uint8_t checksum = input_buffer[0];
 	uint8_t len = input_buffer[1]+2;
-	for (uint8_t index = 1; index < len; ++index)
+	for (uint8_t index = 1; index <= len; ++index)
 	{
 		checksum += input_buffer[index]; // All bytes XOR'd should = 0x00
 	}
@@ -212,6 +214,33 @@ uint8_t checksum_valid()
 	{
 		return 1;
 	}
+}
+
+void send_packet(uint8_t opcode, uint8_t len, uint8_t * data)
+{
+	uint8_t checksum = 0xff;
+	checksum += opcode;
+	usart_putchar(NULL, opcode);
+	checksum += len;
+	usart_putchar(NULL, len);
+	for (uint8_t index = 0; index < len; index++)
+	{
+		checksum += data[index];
+		usart_putchar(NULL, data[index]);
+	}
+	usart_putchar(NULL, ~checksum);
+}
+
+void send_num_bnos()
+{
+	uint8_t count = 0;
+	struct bnoList_t * tmpBno = root;
+	while (tmpBno)
+	{
+		count++;
+		tmpBno = tmpBno->nextPtr;
+	}
+	printf("%d\n", count);
 }
 
 void proc_input()
@@ -228,16 +257,20 @@ void proc_input()
 		return;
 	}
 	input_buffer[input_index] = input_char;
-	if (input_index > 1)
+	if (input_index >= 2) // minimum length: 3
 	{
-		if (input_index == (input_buffer[1] + 2))
+		printf("len: %d\n", input_buffer[1]);
+		if (input_index == (input_buffer[1] + 2)) // data len + type/len/chk bytes
 		{
+			printf("Passed len check.\n");
 			// Check checksum, run command
 			if (checksum_valid() == 0)
 			{
+				printf("passed checksum validation.\n");
 				switch (input_buffer[0])
 				{
 				case 0xC0: // Check number of devices detected
+					send_num_bnos();
 					break;
 				case 0xC1: // Check calibration
 					printf("Check calibration\n");
@@ -276,10 +309,10 @@ int main(void)
 
     setup();
 
-    tmpBno = root;
     for (;;)
     {
         loop();
+        _delay_ms(50);
     }
 
     return 0;
