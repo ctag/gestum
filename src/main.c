@@ -5,9 +5,6 @@
 
 #include "main.h"
 
-// Definitions
-#define INPUT_TIMEOUT 25
-
 // Sensor scan addresses
 const uint8_t tca_addr_list_len = 8;
 const uint8_t tca_addr_list[] = {0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77};
@@ -24,7 +21,14 @@ struct bno055_quaternion_t quat = {0};
 
 unsigned char input_buffer[16] = {0};
 uint8_t input_index = 0;
+#define INPUT_TIMEOUT 25
 uint8_t input_timeout = 0;
+
+#define SYS_STATE_OK 			(0)
+#define SYS_STATE_BOOTUP 		(1)
+#define SYS_STATE_ERR_NO_BNO 	(2)
+#define SYS_STATE_ERR_BNO_INIT 	(3)
+uint8_t system_state = SYS_STATE_BOOTUP;
 
 // Function declarations
 void send_packet(uint8_t opcode, uint8_t len, uint8_t * data);
@@ -93,7 +97,12 @@ void setup()
 	i2c_init();
 //	printf("i2c init.\n");
 
-	_delay_ms(1000); // POR setup time from datasheet
+	// POR setup time from datasheet
+	for (uint8_t i = 0; i < 100; i++)
+	{
+		proc_input();
+		_delay_ms(10);
+	}
 
 	led_set(25, 25, 0);
 
@@ -119,6 +128,7 @@ void setup()
 					bnoList_append(tca_addr_list[tca_i], mux_i, bno_addr_list[bno_i]);
 //					printf("Found BNO 0x%02X at index %d on TCA 0x%02X\n", newBno->bnoPtr->dev_addr, newBno->tca_index, newBno->tca_addr);
 				}
+				proc_input();
 			}
 		}
 	}
@@ -126,8 +136,9 @@ void setup()
 	if (!root)
 	{
 		led_set(25, 0, 0);
-//		printf("No BNO055's detected. Connect them and reboot system.\n");
-		while(1);
+		system_state = SYS_STATE_ERR_NO_BNO;
+		while(1)
+			proc_input();
 	}
 	else
 	{
@@ -145,8 +156,9 @@ void setup()
 			if (err)
 			{
 				led_set(25, 0, 0);
-//				printf("\tError initializing BNO %d... Cycle power to system.\n", tmpBno->tca_index);
-				while(1);
+				system_state = SYS_STATE_ERR_BNO_INIT;
+				while(1)
+					proc_input();
 			}
 
 			do
@@ -162,6 +174,7 @@ void setup()
 				err=bno055_get_sys_calib_stat(&sys_calib_status);
 //				printf("\tSys: %d [%d]\n", sys_calib_status, err);
 //				_delay_ms(500);
+				proc_input();
 			} while (sys_calib_status != 3 || err != 0);
 
 			tmpBno = tmpBno->nextPtr;
@@ -170,6 +183,7 @@ void setup()
 
 	sei();
 	led_set(0, 25, 0);
+	system_state = SYS_STATE_OK;
 }
 
 uint8_t get_quaternion()
