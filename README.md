@@ -32,6 +32,6 @@ Even opcodes are master->mcu. Odd ones are mcu->master.
 
 * 3 BNOs + TCA mux is right at the edge of the max power draw for my ftdi cable..
 * Dupont/header connections make i2c unreliable. For implementation either solder connections or remove any stress/movement in wire connections.
-
+* Firmware startup has a ~1 second delay which allows BNOs to boot. Is mentioned in the BNO datasheet.
 
 
