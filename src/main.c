@@ -5,34 +5,28 @@
 
 #include "main.h"
 
-#define TCAADDR 0x70
+// Definitions
 #define INPUT_TIMEOUT 25
 
+// Sensor scan addresses
 const uint8_t tca_addr_list_len = 8;
 const uint8_t tca_addr_list[] = {0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77};
 
 const uint8_t bno_addr_list_len = 2;
 const uint8_t bno_addr_list[] = {BNO055_I2C_ADDR1, BNO055_I2C_ADDR2};
 
-struct bno055_t myBNO;
-
+// Global variables
 uint8_t accel_calib_status = 0;
 uint8_t gyro_calib_status = 0;
 uint8_t mag_calib_status = 0;
 uint8_t sys_calib_status = 0;
-
 struct bno055_quaternion_t quat = {0};
-
-unsigned int read_counter = 0;
-char float_str[12];
-uint8_t proc_flag = 0;
-uint8_t calibrated = 0;
-uint8_t interrupt_count = 0;
 
 unsigned char input_buffer[16] = {0};
 uint8_t input_index = 0;
 uint8_t input_timeout = 0;
 
+// Function declarations
 void send_packet(uint8_t opcode, uint8_t len, uint8_t * data);
 
 uint8_t tcaselect(uint8_t tca_addr, uint8_t mux) {
@@ -240,7 +234,7 @@ void send_num_bnos()
 		count++;
 		tmpBno = tmpBno->nextPtr;
 	}
-	printf("%d\n", count);
+	send_packet(0xC0, 1, &count);
 }
 
 void proc_input()
@@ -312,7 +306,6 @@ int main(void)
     for (;;)
     {
         loop();
-        _delay_ms(50);
     }
 
     return 0;
