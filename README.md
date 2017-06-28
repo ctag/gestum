@@ -2,6 +2,16 @@
 
 *Firmware which automatically pairs Bosch SensorTec BNO055 library to any number of sensors and shuttles quaternions to a host computer.*
 
+![Learn from the sensei.](https://68.media.tumblr.com/avatar_ef804b42fa43_128.png)
+
+## BNO055
+
+We're using Bosch's BNO055 9-axis fusion IMU. It kinda sucks, and looks like this:
+
+![From Adafruit's website](https://cdn-learn.adafruit.com/assets/assets/000/024/666/medium800/sensors_pinout.jpg?1429726694)
+
+It has a [datasheet](doc/datasheet.pdf), and [C microcontroller library](https://github.com/BoschSensortec/BNO055_driver), with a [3rd party guide](doc/IntegrateBNO055.pdf) to help you integrate the library to your project.
+
 ## TLV Packets
 
 TLV (Type-Length-Value-Checksum) is used to minimize data required to send quaternions to host computer.
@@ -12,7 +22,7 @@ TLV (Type-Length-Value-Checksum) is used to minimize data required to send quate
 * Length - 1 byte unsigned int length of value field.
 	* Note - Entire packet is always 'length + 3'
 * Value - Raw bytearray.
-* Checksum - Validates data integrity.
+* Checksum - Validates data integrity.https://68.media.tumblr.com/avatar_ef804b42fa43_128.png
 	* Type + Length + Value1 + ValueN + Checksum = 0x00
 
 ### Notes
