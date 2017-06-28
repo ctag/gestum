@@ -30,8 +30,15 @@ uint8_t input_timeout = 0;
 #define SYS_STATE_ERR_BNO_INIT 	(3)
 uint8_t system_state = SYS_STATE_BOOTUP;
 
+#define CMD_PING			(0x02)
+#define CMD_GET_STATE 		(0x04)
+#define CMD_GET_BNO_COUNT	(0x06)
+#define CMD_GET_BNO_CALIB 	(0x08)
+#define CMD_GET_QUAT		(0x0A)
+
 // Function declarations
 void send_packet(uint8_t opcode, uint8_t len, uint8_t * data);
+void proc_input();
 
 uint8_t tcaselect(uint8_t tca_addr, uint8_t mux) {
 	uint8_t err = 0;
@@ -227,6 +234,7 @@ uint8_t checksum_valid()
 void send_packet(uint8_t opcode, uint8_t len, uint8_t * data)
 {
 	uint8_t checksum = 0xff;
+	opcode += 1; // Responses are odd numbered.
 	checksum += opcode;
 	usart_putchar(NULL, opcode);
 	checksum += len;
@@ -239,7 +247,17 @@ void send_packet(uint8_t opcode, uint8_t len, uint8_t * data)
 	usart_putchar(NULL, ~checksum);
 }
 
-void send_num_bnos()
+void send_pong()
+{
+	send_packet(CMD_PING, 0, NULL);
+}
+
+void send_system_state()
+{
+	send_packet(CMD_GET_STATE, 1, &system_state);
+}
+
+uint8_t get_num_bnos()
 {
 	uint8_t count = 0;
 	struct bnoList_t * tmpBno = root;
@@ -248,7 +266,47 @@ void send_num_bnos()
 		count++;
 		tmpBno = tmpBno->nextPtr;
 	}
+	return count;
+}
+
+struct bnoList_t * get_bno(uint8_t index)
+{
+	uint8_t count = 0;
+	struct bnoList_t * tmpBno = root;
+	while (tmpBno && count < index)
+	{
+		count++;
+		tmpBno = tmpBno->nextPtr;
+	}
+	return tmpBno;
+}
+
+void send_num_bnos()
+{
+	uint8_t count = get_num_bnos();
 	send_packet(0xC0, 1, &count);
+}
+
+void send_bno_calib(uint8_t index)
+{
+	int8_t err = 0;
+	struct bnoList_t * bno = get_bno(index);
+	uint8_t calib_array[4];
+	tcaselect(bno->tca_addr, bno->tca_index);
+	err=bno055_get_accel_calib_stat(calib_array);
+	err=bno055_get_mag_calib_stat(calib_array+1);
+	err=bno055_get_gyro_calib_stat(calib_array+2);
+	err=bno055_get_sys_calib_stat(calib_array+3);
+	send_packet(CMD_GET_BNO_CALIB, 4, calib_array);
+}
+
+void send_quat(uint8_t index)
+{
+	int8_t err = 0;
+	struct bnoList_t * bno = get_bno(index);
+	tcaselect(bno->tca_addr, bno->tca_index);
+	get_quaternion();
+	send_packet(CMD_GET_QUAT, 8, (uint8_t *)&quat);
 }
 
 void proc_input()
@@ -268,7 +326,8 @@ void proc_input()
 	if (input_index >= 2) // minimum length: 3
 	{
 		printf("len: %d\n", input_buffer[1]);
-		if (input_index == (input_buffer[1] + 2)) // data len + type/len/chk bytes
+		uint8_t len = input_buffer[1];
+		if (input_index == (len + 2)) // data len + type/len/chk bytes
 		{
 			printf("Passed len check.\n");
 			// Check checksum, run command
@@ -277,16 +336,43 @@ void proc_input()
 				printf("passed checksum validation.\n");
 				switch (input_buffer[0])
 				{
-				case 0xC0: // Check number of devices detected
+				case CMD_PING: // Ping
+					send_pong();
+					break;
+				case CMD_GET_STATE: // Get sys state
+					send_system_state();
+					break;
+				case CMD_GET_BNO_COUNT: // Get num bnos
 					send_num_bnos();
 					break;
-				case 0xC1: // Check calibration
-					printf("Check calibration\n");
-					break;
-				case 0xD0: // Device Read
-					break;
-				case 0xD1: // Device calibration status
-					break;
+				case CMD_GET_BNO_CALIB: // Device calibration status
+					{
+						if (len != 1) // Must provide BNO index.
+						{
+							return;
+						}
+						uint8_t index = input_buffer[2];
+						if (index >= get_num_bnos())
+						{
+							return;
+						}
+						send_bno_calib(index);
+						break;
+					}
+				case CMD_GET_QUAT:
+					{
+						if (len != 1) // Must provide BNO index.
+						{
+							return;
+						}
+						uint8_t index = input_buffer[2];
+						if (index >= get_num_bnos())
+						{
+							return;
+						}
+						send_quat(index);
+						break;
+					}
 				default:
 					printf("Invalid command?\n");
 					break;
@@ -320,6 +406,7 @@ int main(void)
     for (;;)
     {
         loop();
+        _delay_ms(20);
     }
 
     return 0;
