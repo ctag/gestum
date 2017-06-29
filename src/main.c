@@ -35,6 +35,7 @@ uint8_t system_state = SYS_STATE_BOOTUP;
 #define CMD_GET_BNO_COUNT	(0x06)
 #define CMD_GET_BNO_CALIB 	(0x08)
 #define CMD_GET_QUAT		(0x0A)
+#define CMD_ERR				(0xAA)
 
 // Function declarations
 void send_packet(uint8_t opcode, uint8_t len, uint8_t * data);
@@ -315,6 +316,11 @@ void send_quat(uint8_t index)
 	send_packet(CMD_GET_QUAT, 8, (uint8_t *)&quat);
 }
 
+void send_err()
+{
+	send_packet(CMD_ERR, 0, NULL);
+}
+
 void proc_input()
 {
 	char input_char;
@@ -378,8 +384,13 @@ void proc_input()
 						send_quat(index);
 						break;
 					}
+				case CMD_ERR:
+					{
+						// OK?
+						break;
+					}
 				default:
-					printf("Invalid command?\n");
+					send_err();
 					break;
 				}
 				input_index = 0;

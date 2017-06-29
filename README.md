@@ -61,6 +61,8 @@ Even opcodes are master->mcu. Odd ones are mcu->master.
 	* Value field is BNO index.
 * 0x0B: Return BNO Quaternion
 	* Value field is quaternion. 4 bytes.
+* 0xAA: Generic system error
+* 0xAB: Generic system error
 
 ### System state
 
