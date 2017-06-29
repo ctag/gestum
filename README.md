@@ -4,13 +4,11 @@
 
 ![Learn from the sensei.](https://68.media.tumblr.com/avatar_ef804b42fa43_128.png)
 
-## BNO055
+## Firmware setup
 
-We're using Bosch's BNO055 9-axis fusion IMU. It kinda sucks, and looks like this:
+### Serial settings
 
-![From Adafruit's website](https://cdn-learn.adafruit.com/assets/assets/000/024/666/medium800/sensors_pinout.jpg?1429726694)
-
-It has a [datasheet](doc/datasheet.pdf), and [C microcontroller library](https://github.com/BoschSensortec/BNO055_driver), with a [3rd party guide](doc/IntegrateBNO055.pdf) to help you integrate the library to your project.
+38400 baud, 8N1
 
 ## TLV Packets
 
@@ -28,6 +26,7 @@ TLV (Type-Length-Value-Checksum) is used to minimize data required to send quate
 ### Notes
 
 * Not using preamble/postamble because timeout takes care of synchronization.
+	* Timeout is ~30ms. So if comms go down, wait a while and try again.
 * Not parsed without length byte.
 	* Minimum packet length is 3 bytes.
 
@@ -49,6 +48,7 @@ Even opcodes are master->mcu. Odd ones are mcu->master.
 	* See System state section below.
 * 0x06: Request BNO count
 	* No Value field.
+	* Packet: 0x0600FA
 * 0x07: Return BNO count
 	* Value field is one uint8
 * 0x08: Request BNO Calibration Status
@@ -71,15 +71,44 @@ Sent as a uint8. Constructed such that any nonzero number indicates a problem (e
 * 2 - No BNOs detected during scan. Connect them and reboot system.
 * 3 - Error initializing BNO. Cycle power to system. Should send erroneous BNO #.
 
+## BNO055
+
+We're using Bosch's BNO055 9-axis fusion IMU. It kinda sucks, and looks like this:
+
+![From Adafruit's website](https://cdn-learn.adafruit.com/assets/assets/000/024/666/medium800/sensors_pinout.jpg?1429726694)
+
+It has a [datasheet](doc/datasheet.pdf), and [C microcontroller library](https://github.com/BoschSensortec/BNO055_driver), with a [3rd party guide](doc/IntegrateBNO055.pdf) to help you integrate the library to your project.
+
+### Bootup
+
+On boot the BNO automatically falls into calibration mode. The space sensei firmware will wait until the minimum (maybe) calibration is met. Then it will proceed to normal operation.
+
+On the debugging hardware, an LED is yellow during calibration, then switches to green for normal operation.
+
+For NDEF mode (which we're using) the most basic calibration required is magnotometer (rotate sensor 360 like a compass).
+
+### Calibration
+
+Also listed in BNO datasheet page 47. Reiterated here for convenience.
+
+* Mag
+	* Rotate sensor in a circle like a compass.
+* Gyro
+	* Place sensor in a stable position for a few seconds.
+* Accel
+	* Place the device in 6 different stable positions for a period of few seconds to allow the
+accelerometer to calibrate.
+	* Make sure that there is slow movement between 2 stable positions
+	* The 6 stable positions could be in any direction, but make sure that the device is lying at
+least once perpendicular to the x, y and z axis.
+
+Calibration status (as returned by command) is 0-3 for each with 0 being uncalibrated and 3 being nicely calibrated.
+
 ## Dev Notes
 
 * 3 BNOs + TCA mux is right at the edge of the max power draw for my ftdi cable..
 * Dupont/header connections make i2c unreliable. For implementation either solder connections or remove any stress/movement in wire connections.
 * Firmware startup has a ~1 second delay which allows BNOs to boot. Is mentioned in the BNO datasheet.
-
-## Todo
-
-Fix tlv timeout.
 
 
 
