@@ -63,6 +63,10 @@ Even opcodes are master->mcu. Odd ones are mcu->master.
 	* Value field is quaternion. 4 bytes.
 * 0xAA: Generic system error
 * 0xAB: Generic system error
+* 0xAC: Checksum error
+* 0xAD: Checksum error
+* 0xAE: Timeout with partial packet
+* 0xAF: Timeout with partial packet
 
 ### System state
 

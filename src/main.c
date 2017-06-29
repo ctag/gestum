@@ -35,7 +35,9 @@ uint8_t system_state = SYS_STATE_BOOTUP;
 #define CMD_GET_BNO_COUNT	(0x06)
 #define CMD_GET_BNO_CALIB 	(0x08)
 #define CMD_GET_QUAT		(0x0A)
-#define CMD_ERR				(0xAA)
+#define CMD_ERR_GEN			(0xAA)
+#define CMD_ERR_CHK			(0xAC)
+#define CMD_ERR_TMOUT		(0xAE)
 
 // Function declarations
 void send_packet(uint8_t opcode, uint8_t len, uint8_t * data);
@@ -316,9 +318,9 @@ void send_quat(uint8_t index)
 	send_packet(CMD_GET_QUAT, 8, (uint8_t *)&quat);
 }
 
-void send_err()
+void send_err(uint8_t err)
 {
-	send_packet(CMD_ERR, 0, NULL);
+	send_packet(err, 0, NULL);
 }
 
 void proc_input()
@@ -328,6 +330,10 @@ void proc_input()
 	{
 		if (input_timeout > INPUT_TIMEOUT)
 		{
+			if (input_index > 0)
+			{
+				send_err(CMD_ERR_TMOUT);
+			}
 			input_timeout = 0;
 			input_index = 0;
 		}
@@ -345,13 +351,38 @@ void proc_input()
 			if (checksum_valid() == 0)
 			{
 //				printf("passed checksum validation.\n");
+				if (system_state == 1)
+				{
+					switch(input_buffer[0])
+					{
+						case CMD_GET_STATE: // Get sys state
+							send_system_state();
+							break;
+						default:
+							send_err(CMD_ERR_GEN);
+							break;
+					}
+					input_index = 0;
+					return;
+				}
+				if (system_state >= 1)
+				{
+					switch(input_buffer[0])
+					{
+						case CMD_GET_STATE: // Get sys state
+							send_system_state();
+							break;
+						default:
+							send_err(CMD_ERR_GEN);
+							break;
+					}
+					input_index = 0;
+					return;
+				}
 				switch (input_buffer[0])
 				{
 				case CMD_PING: // Ping
 					send_pong();
-					break;
-				case CMD_GET_STATE: // Get sys state
-					send_system_state();
 					break;
 				case CMD_GET_BNO_COUNT: // Get num bnos
 					send_num_bnos();
@@ -384,17 +415,21 @@ void proc_input()
 						send_quat(index);
 						break;
 					}
-				case CMD_ERR:
+				case CMD_ERR_GEN:
 					{
 						// OK?
 						break;
 					}
 				default:
-					send_err();
+					send_err(CMD_ERR_GEN);
 					break;
 				}
 				input_index = 0;
 				return;
+			}
+			else
+			{
+				send_err(CMD_ERR_CHK);
 			}
 		}
 	}
