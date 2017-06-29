@@ -21,7 +21,7 @@ struct bno055_quaternion_t quat = {0};
 
 unsigned char input_buffer[16] = {0};
 uint8_t input_index = 0;
-#define INPUT_TIMEOUT 25
+#define INPUT_TIMEOUT 3
 uint8_t input_timeout = 0;
 
 #define SYS_STATE_OK 			(0)
@@ -88,6 +88,12 @@ void init ()
 	DDRB = (1<<PIN1) | (1<<PIN2) | (1<<PIN3);
 	led_enable();
 	led_set(0, 0, 0);
+
+	// Timer0B setup
+	TCCR0B = (1 << CS02) | (1 << CS00);
+	TCNT0 = 0;
+	OCR0B = 156; // 10ms polling
+	TIMSK0 = (1<< OCIE0B);
 }
 
 void setup()
@@ -284,7 +290,7 @@ struct bnoList_t * get_bno(uint8_t index)
 void send_num_bnos()
 {
 	uint8_t count = get_num_bnos();
-	send_packet(0xC0, 1, &count);
+	send_packet(CMD_GET_BNO_COUNT, 1, &count);
 }
 
 void send_bno_calib(uint8_t index)
@@ -314,7 +320,6 @@ void proc_input()
 	char input_char;
 	if(usart_getchar(&input_char))
 	{
-		input_timeout++;
 		if (input_timeout > INPUT_TIMEOUT)
 		{
 			input_timeout = 0;
@@ -325,15 +330,15 @@ void proc_input()
 	input_buffer[input_index] = input_char;
 	if (input_index >= 2) // minimum length: 3
 	{
-		printf("len: %d\n", input_buffer[1]);
+//		printf("len: %d\n", input_buffer[1]);
 		uint8_t len = input_buffer[1];
 		if (input_index == (len + 2)) // data len + type/len/chk bytes
 		{
-			printf("Passed len check.\n");
+//			printf("Passed len check.\n");
 			// Check checksum, run command
 			if (checksum_valid() == 0)
 			{
-				printf("passed checksum validation.\n");
+//				printf("passed checksum validation.\n");
 				switch (input_buffer[0])
 				{
 				case CMD_PING: // Ping
@@ -406,10 +411,15 @@ int main(void)
     for (;;)
     {
         loop();
-        _delay_ms(20);
     }
 
     return 0;
+}
+
+// Interrupt vector
+ISR(TIMER0_COMPB_vect)
+{
+	input_timeout++;
 }
 
 
