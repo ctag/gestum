@@ -16,4 +16,4 @@ Command to flash D1 mini:
     0x3fe000 blank.bin 
 
 
-By default the esp-link firmware creates an AP which you connect to and then browse the x.x.x.1 IP address's site, which is configuration for the 
+By default the esp-link firmware creates an AP which you connect to and then browse the x.x.x.1 IP address's site, which is configuration for the system.
