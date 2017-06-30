@@ -17,3 +17,28 @@ Command to flash D1 mini:
 
 
 By default the esp-link firmware creates an AP which you connect to and then browse the x.x.x.1 IP address's site, which is configuration for the system.
+
+## Configuration
+
+I'm using 'swapped' uart on the esp in order to avoid the boot-up spray of useless serial output.
+
+I have debug logging turned off to keep junk from being sent to the microcontroller.
+
+## Connection
+
+To connect the esp's telnet to a virtual serial port:
+
+    sudo socat TCP4:192.168.4.1:23 PTY,link=/dev/ttyS0
+
+Then open `/dev/ttyS0` with root.
+
+If your machine uses generic DNS, then you can replace the above IP with the esp's mDNS hostname: `esp-link`
+
+
+
+
+
+
+
+
+
