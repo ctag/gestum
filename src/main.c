@@ -21,7 +21,7 @@ struct bno055_quaternion_t quat = {0};
 
 unsigned char input_buffer[16] = {0};
 uint8_t input_index = 0;
-#define INPUT_TIMEOUT 3
+#define INPUT_TIMEOUT 5
 uint8_t input_timeout = 0;
 
 #define SYS_STATE_OK 			(0)
