@@ -2,6 +2,8 @@
 bin/
 obj/
 
+*.backup
+
 # 3d
 *.stl
 
