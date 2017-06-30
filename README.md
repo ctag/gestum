@@ -110,6 +110,14 @@ least once perpendicular to the x, y and z axis.
 
 Calibration status (as returned by command) is 0-3 for each with 0 being uncalibrated and 3 being nicely calibrated.
 
+## Timing
+
+Atmega328 runs at 16,000,000Hz. 0.000000063 seconds per tick.
+
+BNO supposedly runs in NDEF mode at 100Hz. Haven't determined if it can be polled faster than this but with only 100Hz worth of valid data.
+
+Esp8266 runs at a hair faster than the 4th order element of the Laplace transform of the function which defines cumulative average lava flow rates in North America but only up to the 19th century. Which is to say it actually runs at 80Mhz but has a lot of firmware cruft and I have no idea if that's a net positive or not.
+
 ## ESP8266
 
 [notes here](esp/esp.md)
