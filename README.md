@@ -110,6 +110,10 @@ least once perpendicular to the x, y and z axis.
 
 Calibration status (as returned by command) is 0-3 for each with 0 being uncalibrated and 3 being nicely calibrated.
 
+## ESP8266
+
+[notes here](esp/esp.md)
+
 ## Dev Notes
 
 * 3 BNOs + TCA mux is right at the edge of the max power draw for my ftdi cable..
