@@ -34,6 +34,9 @@ Then open `/dev/ttyS0` with root.
 
 If your machine uses generic DNS, then you can replace the above IP with the esp's mDNS hostname: `esp-link`
 
+Reference:
+
+http://technostuff.blogspot.com/2008/10/some-useful-socat-commands.html
 
 
 
