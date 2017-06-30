@@ -387,6 +387,9 @@ void proc_input()
 				case CMD_GET_BNO_COUNT: // Get num bnos
 					send_num_bnos();
 					break;
+				case CMD_GET_STATE: // Get sys state
+					send_system_state();
+					break;
 				case CMD_GET_BNO_CALIB: // Device calibration status
 					{
 						if (len != 1) // Must provide BNO index.

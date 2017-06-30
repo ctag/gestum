@@ -116,5 +116,9 @@ Calibration status (as returned by command) is 0-3 for each with 0 being uncalib
 * Dupont/header connections make i2c unreliable. For implementation either solder connections or remove any stress/movement in wire connections.
 * Firmware startup has a ~1 second delay which allows BNOs to boot. Is mentioned in the BNO datasheet.
 
+## To Do  
 
+Explain checksumming
+
+Add quaternion member byte order in return tlv
 
