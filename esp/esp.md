@@ -28,7 +28,7 @@ The esp-01 has 1MB of flash, runs at 40MHz, costs less than $5 and is pretty sma
 
 ## Installation
 
-Download release archive and extract it.
+From the [esp-link flashing guide](https://github.com/jeelabs/esp-link/blob/master/FLASHING.md), download release archive and extract it.
 
 Command to flash D1 mini:
 
