@@ -2,13 +2,13 @@
 
 Using esp-link firmware on Wemos D1 mini board (esp8266). Also works on ESP-01 (smaller board).
 
-![They're crazy and I don't like them, just like Tingle here.](https://vignette2.wikia.nocookie.net/zelda/images/6/6f/Tingle_%28Super_Smash_Bros._Brawl%29.png/revision/latest?cb=20100226195556)
+![They're eccentric and I don't like them, just like Tingle here.](https://vignette2.wikia.nocookie.net/zelda/images/6/6f/Tingle_%28Super_Smash_Bros._Brawl%29.png/revision/latest?cb=20100226195556)
 
 ## Devices
 
 We're using two types of ESP8266 boards: [D1 Mini by WeMos](https://wiki.wemos.cc/products:d1:d1_mini) and [ESP-01 by AI Thinker](http://ecksteinimg.de/Datasheet/Ai-thinker%20ESP-01%20EN.pdf).
 
-WeMod D1 is good for debugging and testing, but I'd like a final product to have the esp-01 because it's much smaller.
+WeMos D1 is good for debugging and testing, but I'd like a final product to have the esp-01 because it's much smaller.
 
 Command to check flash memory size:
 
