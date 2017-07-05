@@ -2,15 +2,27 @@
 
 Using esp-link firmware on Wemos D1 mini board (esp8266). Also works on ESP-01 (smaller board).
 
+![They're crazy and I don't like them, just like Tingle here.](https://vignette2.wikia.nocookie.net/zelda/images/6/6f/Tingle_%28Super_Smash_Bros._Brawl%29.png/revision/latest?cb=20100226195556)
+
 ## Devices
 
 We're using two types of ESP8266 boards: [D1 Mini by WeMos](https://wiki.wemos.cc/products:d1:d1_mini) and [ESP-01 by AI Thinker](http://ecksteinimg.de/Datasheet/Ai-thinker%20ESP-01%20EN.pdf).
 
-D1 Mini:
+WeMod D1 is good for debugging and testing, but I'd like a final product to have the esp-01 because it's much smaller.
+
+Command to check flash memory size:
+
+	esptool --port /dev/ttyUSB3 --baud 115200 flash_id
+
+### D1 Mini
+
+The D1 mini has 8MB of flash, runs at 80MHz, costs less than $10, and is pretty big. Can be programmed over built-in usb port. Accepts 3V3 or 5V VCC.
 
 ![Image of D1 Mini](https://wiki.wemos.cc/_media/products:d1:d1_mini_v2.3.0_1_16x9.jpg)
 
-ESP-01:
+### ESP-01
+
+The esp-01 has 1MB of flash, runs at 40MHz, costs less than $5 and is pretty small. Can be programmed with an [external FTDI adapter](http://www.14core.com/wiring-and-upgrading-the-esp8266-firmware-via-ttl-uart-bridge/) and a sacrifice to the gods of poor PCB design. Accepts only 3V3 officially... but will work with 5V and get scalding hot.
 
 ![Image of esp-01](https://cdn.instructables.com/FE9/58ZS/IJX7FON7/FE958ZSIJX7FON7.MEDIUM.jpg)
 
@@ -26,6 +38,10 @@ Command to flash D1 mini:
     0x3fc000 esp_init_data_default.bin 0x7e000 blank.bin \
     0x3fe000 blank.bin 
 
+This command is a mash-up of the [instructions for flashing esp-link](https://github.com/jeelabs/esp-link/blob/master/FLASHING.md) and Wemos's d1 mini [flashing guide](https://wiki.wemos.cc/tutorials:get_started:revert_to_at_firmware).
+
+Default AP ssid: `ESP_XXXXXX`
+
 Command to flash ESP-01:
 
 	esptool --chip esp8266 --port /dev/ttyUSB3 \
@@ -34,9 +50,9 @@ Command to flash ESP-01:
 	0xfc000 esp_init_data_default.bin \
 	0xfe000 blank.bin
 
-This command is a mash-up of the [instructions for flashing esp-link](https://github.com/jeelabs/esp-link/blob/master/FLASHING.md) and Wemos's d1 mini [flashing guide](https://wiki.wemos.cc/tutorials:get_started:revert_to_at_firmware).
+Default AP ssid: `AI-THINKER_XXXXXX`
 
-By default the esp-link firmware creates an AP which you connect to and then browse the x.x.x.1 IP address's site, which is configuration for the system.
+By default the esp-link firmware creates an AP which you connect to and then browse the 192.168.4.1 IP address's site, which is configuration for the system.
 
 ## Configuration
 
