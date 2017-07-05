@@ -20,11 +20,15 @@ By default the esp-link firmware creates an AP which you connect to and then bro
 
 ## Configuration
 
-I'm using 'swapped' uart on the esp in order to avoid the boot-up spray of useless serial output.
+Connect to the `ESP-XXXXX` network. You should receive a DHCP address in 192.168.4.0/24.
+
+The ESP runs mDNS, so you can connect to the ESP as either `esp-link` hostname or `192.168.4.1` IP address.
+
+Telnet is primarily on port 23. There is a 5 minute timeout for inactivity, after which you need to reconnect.
 
 I have debug logging turned off to keep junk from being sent to the microcontroller.
 
-## Connection
+## Serial Connection
 
 To connect the esp's telnet to a virtual serial port:
 
@@ -38,6 +42,7 @@ Reference:
 
 http://technostuff.blogspot.com/2008/10/some-useful-socat-commands.html
 
+Apparently you can also just use normal TCP, but I haven' tested it yet.
 
 ## Testing
 
