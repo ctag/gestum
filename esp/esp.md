@@ -1,6 +1,18 @@
 # ESP Link
 
-Using esp-link firmware on Wemos D1 mini board (esp8266).
+Using esp-link firmware on Wemos D1 mini board (esp8266). Also works on ESP-01 (smaller board).
+
+## Devices
+
+We're using two types of ESP8266 boards: [D1 Mini by WeMos](https://wiki.wemos.cc/products:d1:d1_mini) and [ESP-01 by AI Thinker](http://ecksteinimg.de/Datasheet/Ai-thinker%20ESP-01%20EN.pdf).
+
+D1 Mini:
+
+![Image of D1 Mini](https://wiki.wemos.cc/_media/products:d1:d1_mini_v2.3.0_1_16x9.jpg)
+
+ESP-01:
+
+![Image of esp-01](https://cdn.instructables.com/FE9/58ZS/IJX7FON7/FE958ZSIJX7FON7.MEDIUM.jpg)
 
 ## Installation
 
@@ -13,6 +25,14 @@ Command to flash D1 mini:
     0x00000 boot_v1.6.bin 0x01000 user1.bin \
     0x3fc000 esp_init_data_default.bin 0x7e000 blank.bin \
     0x3fe000 blank.bin 
+
+Command to flash ESP-01:
+
+	esptool --chip esp8266 --port /dev/ttyUSB3 \
+	write_flash -fm dio -fs detect -ff 40m \
+	0x00000 boot_v1.6.bin 0x01000 user1.bin \
+	0xfc000 esp_init_data_default.bin \
+	0xfe000 blank.bin
 
 This command is a mash-up of the [instructions for flashing esp-link](https://github.com/jeelabs/esp-link/blob/master/FLASHING.md) and Wemos's d1 mini [flashing guide](https://wiki.wemos.cc/tutorials:get_started:revert_to_at_firmware).
 
