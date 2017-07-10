@@ -29,7 +29,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:switches
-LIBS:pinboard-cache
+LIBS:opisthenar-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
@@ -120,28 +120,6 @@ F 2 "Resistors_ThroughHole:R_Axial_DIN0309_L9.0mm_D3.2mm_P15.24mm_Horizontal" V 
 F 3 "" H 6150 3150 50  0001 C CNN
 	1    6150 3150
 	0    1    1    0   
-$EndComp
-$Comp
-L R R3
-U 1 1 5927D344
-P 4700 5050
-F 0 "R3" V 4780 5050 50  0000 C CNN
-F 1 "4.7K" V 4700 5050 50  0000 C CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0309_L9.0mm_D3.2mm_P15.24mm_Horizontal" V 4630 5050 50  0001 C CNN
-F 3 "" H 4700 5050 50  0001 C CNN
-	1    4700 5050
-	0    -1   -1   0   
-$EndComp
-$Comp
-L R R2
-U 1 1 5927D3CE
-P 4700 4500
-F 0 "R2" V 4780 4500 50  0000 C CNN
-F 1 "4.7K" V 4700 4500 50  0000 C CNN
-F 2 "Resistors_ThroughHole:R_Axial_DIN0309_L9.0mm_D3.2mm_P15.24mm_Horizontal" V 4630 4500 50  0001 C CNN
-F 3 "" H 4700 4500 50  0001 C CNN
-	1    4700 4500
-	0    -1   -1   0   
 $EndComp
 $Comp
 L GND #PWR01
@@ -384,16 +362,181 @@ Text Label 4200 5450 0    60   ~ 0
 AREF
 Text Label 4200 5250 0    60   ~ 0
 PC0
-Text Label 4200 5150 0    60   ~ 0
-PC1
-Text Label 4200 5050 0    60   ~ 0
-PC2
-Text Label 4200 4950 0    60   ~ 0
-PC3
-Text Label 4700 4850 0    60   ~ 0
+$Comp
+L TCA9548A_ADAFRUIT U?
+U 1 1 59640849
+P 6500 4950
+F 0 "U?" H 6250 5750 50  0000 L CNN
+F 1 "TCA9548A_ADAFRUIT" H 6550 5800 50  0000 L CNN
+F 2 "" H 7500 4050 50  0001 C CNN
+F 3 "" H 6550 5200 50  0000 C CNN
+	1    6500 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L VCC #PWR?
+U 1 1 59642198
+P 6500 3850
+F 0 "#PWR?" H 6500 3700 50  0001 C CNN
+F 1 "VCC" H 6500 4000 50  0000 C CNN
+F 2 "" H 6500 3850 50  0001 C CNN
+F 3 "" H 6500 3850 50  0001 C CNN
+	1    6500 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 596422B4
+P 6500 6150
+F 0 "#PWR?" H 6500 5900 50  0001 C CNN
+F 1 "GND" H 6500 6000 50  0000 C CNN
+F 2 "" H 6500 6150 50  0001 C CNN
+F 3 "" H 6500 6150 50  0001 C CNN
+	1    6500 6150
+	1    0    0    -1  
+$EndComp
+Text Label 5700 4250 0    60   ~ 0
+SCL
+Text Label 5700 4350 0    60   ~ 0
 SDA
+$Comp
+L CONN_01X12 J?
+U 1 1 5964B314
+P 8600 5050
+F 0 "J?" H 8600 5700 50  0000 C CNN
+F 1 "CONN_01X12" V 8700 5050 50  0000 C CNN
+F 2 "" H 8600 5050 50  0001 C CNN
+F 3 "" H 8600 5050 50  0001 C CNN
+	1    8600 5050
+	1    0    0    -1  
+$EndComp
+$Comp
+L CONN_01X12 J?
+U 1 1 5964B3BB
+P 9100 5050
+F 0 "J?" H 9100 5700 50  0000 C CNN
+F 1 "CONN_01X12" V 9200 5050 50  0000 C CNN
+F 2 "" H 9100 5050 50  0001 C CNN
+F 3 "" H 9100 5050 50  0001 C CNN
+	1    9100 5050
+	-1   0    0    1   
+$EndComp
 Text Label 4700 4750 0    60   ~ 0
 SCL
+Text Label 4700 4850 0    60   ~ 0
+SDA
+Text Label 4200 4950 0    60   ~ 0
+PC3
+Text Label 4200 5050 0    60   ~ 0
+PC2
+Text Label 4200 5150 0    60   ~ 0
+PC1
+Text Label 5600 4750 0    60   ~ 0
+~TCA_RESET
+Text Label 5650 5250 0    60   ~ 0
+TCA_A2
+Text Label 5650 5350 0    60   ~ 0
+TCA_A1
+Text Label 5650 5450 0    60   ~ 0
+TCA_A0
+Text Label 7000 5750 0    60   ~ 0
+SD7
+Text Label 7000 5650 0    60   ~ 0
+SC7
+Text Label 7000 5550 0    60   ~ 0
+SD6
+Text Label 7000 5450 0    60   ~ 0
+SC6
+Text Label 7000 5350 0    60   ~ 0
+SD5
+Text Label 7000 5250 0    60   ~ 0
+SC5
+Text Label 7000 5150 0    60   ~ 0
+SD4
+Text Label 7000 5050 0    60   ~ 0
+SC4
+Text Label 7000 4950 0    60   ~ 0
+SD3
+Text Label 7000 4850 0    60   ~ 0
+SC3
+Text Label 7000 4750 0    60   ~ 0
+SD2
+Text Label 7000 4650 0    60   ~ 0
+SC2
+Text Label 7000 4550 0    60   ~ 0
+SD1
+Text Label 7000 4450 0    60   ~ 0
+SC1
+Text Label 7000 4350 0    60   ~ 0
+SD0
+Text Label 7000 4250 0    60   ~ 0
+SC0
+$Comp
+L VCC #PWR?
+U 1 1 5965455D
+P 8300 4400
+F 0 "#PWR?" H 8300 4250 50  0001 C CNN
+F 1 "VCC" H 8300 4550 50  0000 C CNN
+F 2 "" H 8300 4400 50  0001 C CNN
+F 3 "" H 8300 4400 50  0001 C CNN
+	1    8300 4400
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 59654589
+P 8100 4400
+F 0 "#PWR?" H 8100 4150 50  0001 C CNN
+F 1 "GND" H 8100 4250 50  0000 C CNN
+F 2 "" H 8100 4400 50  0001 C CNN
+F 3 "" H 8100 4400 50  0001 C CNN
+	1    8100 4400
+	-1   0    0    1   
+$EndComp
+Text Label 8150 4700 0    60   ~ 0
+SDA
+Text Label 8150 4800 0    60   ~ 0
+SCL
+Text Label 7900 4900 0    60   ~ 0
+~TCA_RESET
+Text Label 8050 5000 0    60   ~ 0
+TCA_A0
+Text Label 8050 5100 0    60   ~ 0
+TCA_A1
+Text Label 8050 5200 0    60   ~ 0
+TCA_A2
+Text Label 8050 5300 0    60   ~ 0
+SD0
+Text Label 8050 5400 0    60   ~ 0
+SC0
+Text Label 8050 5500 0    60   ~ 0
+SD1
+Text Label 8050 5600 0    60   ~ 0
+SC1
+Text Label 9450 5600 0    60   ~ 0
+SD2
+Text Label 9450 5500 0    60   ~ 0
+SC2
+Text Label 9450 5400 0    60   ~ 0
+SD3
+Text Label 9450 5300 0    60   ~ 0
+SC3
+Text Label 9450 5200 0    60   ~ 0
+SD4
+Text Label 9450 5100 0    60   ~ 0
+SC4
+Text Label 9450 5000 0    60   ~ 0
+SD5
+Text Label 9450 4900 0    60   ~ 0
+SC5
+Text Label 9450 4800 0    60   ~ 0
+SD6
+Text Label 9450 4700 0    60   ~ 0
+SC6
+Text Label 9450 4600 0    60   ~ 0
+SD7
+Text Label 9450 4500 0    60   ~ 0
+SC7
 Wire Wire Line
 	4150 2500 4400 2500
 Wire Wire Line
@@ -498,33 +641,115 @@ Wire Wire Line
 Wire Wire Line
 	3000 4950 3150 4950
 Wire Wire Line
-	4200 5550 5100 5550
-Wire Wire Line
 	4200 5350 4700 5350
-Wire Wire Line
-	4200 4750 4700 4750
-Wire Wire Line
-	4200 4850 4700 4850
 Wire Wire Line
 	4700 5350 4700 5150
 Wire Wire Line
 	4700 5150 4850 5150
 Wire Wire Line
-	4550 4500 4450 4500
+	6500 5950 6500 6150
 Wire Wire Line
-	4450 4500 4450 4750
-Connection ~ 4450 4750
+	6500 3850 6500 4050
 Wire Wire Line
-	4550 5050 4450 5050
+	5700 4250 6100 4250
 Wire Wire Line
-	4450 5050 4450 4850
-Connection ~ 4450 4850
+	5700 4350 6100 4350
 Wire Wire Line
-	5100 5550 5100 4500
+	4200 4850 4700 4850
 Wire Wire Line
-	5100 4500 4850 4500
-Connection ~ 4850 5550
+	4200 4750 4700 4750
 Wire Wire Line
-	4850 5050 5100 5050
-Connection ~ 5100 5050
+	4200 5550 4850 5550
+Wire Wire Line
+	6900 4250 7000 4250
+Wire Wire Line
+	6900 4350 7000 4350
+Wire Wire Line
+	6900 4450 7000 4450
+Wire Wire Line
+	6900 4550 7000 4550
+Wire Wire Line
+	6900 4650 7000 4650
+Wire Wire Line
+	6900 4750 7000 4750
+Wire Wire Line
+	6900 4850 7000 4850
+Wire Wire Line
+	6900 4950 7000 4950
+Wire Wire Line
+	6900 5050 7000 5050
+Wire Wire Line
+	6900 5150 7000 5150
+Wire Wire Line
+	6900 5250 7000 5250
+Wire Wire Line
+	6900 5350 7000 5350
+Wire Wire Line
+	6900 5450 7000 5450
+Wire Wire Line
+	6900 5550 7000 5550
+Wire Wire Line
+	6900 5650 7000 5650
+Wire Wire Line
+	6900 5750 7000 5750
+Wire Wire Line
+	5650 5250 6100 5250
+Wire Wire Line
+	5650 5350 6100 5350
+Wire Wire Line
+	5650 5450 6100 5450
+Wire Wire Line
+	5600 4750 6100 4750
+Wire Wire Line
+	8300 4400 8300 4500
+Wire Wire Line
+	8300 4500 8400 4500
+Wire Wire Line
+	8100 4400 8100 4600
+Wire Wire Line
+	8100 4600 8400 4600
+Wire Wire Line
+	8150 4700 8400 4700
+Wire Wire Line
+	8150 4800 8400 4800
+Wire Wire Line
+	7900 4900 8400 4900
+Wire Wire Line
+	8050 5000 8400 5000
+Wire Wire Line
+	8050 5100 8400 5100
+Wire Wire Line
+	8050 5200 8400 5200
+Wire Wire Line
+	8050 5300 8400 5300
+Wire Wire Line
+	8050 5400 8400 5400
+Wire Wire Line
+	8050 5500 8400 5500
+Wire Wire Line
+	8050 5600 8400 5600
+Wire Wire Line
+	9300 5600 9450 5600
+Wire Wire Line
+	9300 5500 9450 5500
+Wire Wire Line
+	9300 5400 9450 5400
+Wire Wire Line
+	9300 5300 9450 5300
+Wire Wire Line
+	9300 5200 9450 5200
+Wire Wire Line
+	9300 5100 9450 5100
+Wire Wire Line
+	9300 5000 9450 5000
+Wire Wire Line
+	9300 4900 9450 4900
+Wire Wire Line
+	9300 4800 9450 4800
+Wire Wire Line
+	9300 4700 9450 4700
+Wire Wire Line
+	9300 4600 9450 4600
+Wire Wire Line
+	9300 4500 9450 4500
 $EndSCHEMATC
