@@ -1,4 +1,4 @@
-update=Sun 02 Jul 2017 10:43:30 PM CDT
+update=Tue 11 Jul 2017 12:46:56 PM CDT
 version=1
 last_client=kicad
 [pcbnew]
@@ -23,9 +23,11 @@ ModuleOutlineThickness=0.150000000000
 [cvpcb]
 version=1
 NetIExt=net
+[general]
+version=1
 [eeschema]
 version=1
-LibDir=
+LibDir=/home/berocs/kicad/libraries
 [eeschema/libraries]
 LibName1=power
 LibName2=device
@@ -57,5 +59,4 @@ LibName27=atmel
 LibName28=contrib
 LibName29=valves
 LibName30=switches
-[general]
-version=1
+LibName31=kicad-ESP8266/ESP8266
