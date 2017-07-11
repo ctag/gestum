@@ -24,6 +24,10 @@ The D1 mini has 8MB of flash, runs at 80MHz, costs less than $10, and is pretty 
 
 The esp-01 has 1MB of flash, runs at 40MHz, costs less than $5 and is pretty small. Can be programmed with an [external FTDI adapter](http://www.14core.com/wiring-and-upgrading-the-esp8266-firmware-via-ttl-uart-bridge/) and a sacrifice to the gods of poor PCB design. Accepts only 3V3 officially... but will work with 5V and get scalding hot.
 
+The ESP-01 has two onboard LEDs, red and blue. Red is connected to power, blue is connected to the board's TX.
+
+ESP-link adds an external green LED for wireless status. It is active-low; 3.3V draw.
+
 ![Image of esp-01](https://cdn.instructables.com/FE9/58ZS/IJX7FON7/FE958ZSIJX7FON7.MEDIUM.jpg)
 
 ## Installation
