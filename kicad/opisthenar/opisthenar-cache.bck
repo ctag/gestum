@@ -6,10 +6,4 @@ K I2C Hub
 F http://www.ti.com/lit/ds/symlink/tca9548a.pdf
 $ENDCMP
 #
-$CMP TCA9548A_TSSOP
-D I2C Hub, 8 Channels, TSSOP-24
-K I2C Hub
-F http://www.ti.com/lit/ds/symlink/tca9548a.pdf
-$ENDCMP
-#
 #End Doc Library

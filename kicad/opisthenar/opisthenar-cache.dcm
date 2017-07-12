@@ -1,15 +1,9 @@
 EESchema-DOCLIB  Version 2.0
 #
 $CMP TCA9548A_ADAFRUIT
-D I2C Hub, 8 Channels, TSSOP-24
+D I2C Hub, 8 Channels, PCB
 K I2C Hub
-F http://www.ti.com/lit/ds/symlink/tca9548a.pdf
-$ENDCMP
-#
-$CMP TCA9548A_TSSOP
-D I2C Hub, 8 Channels, TSSOP-24
-K I2C Hub
-F http://www.ti.com/lit/ds/symlink/tca9548a.pdf
+F https://cdn-learn.adafruit.com/downloads/pdf/adafruit-tca9548a-1-to-8-i2c-multiplexer-breakout.pdf
 $ENDCMP
 #
 #End Doc Library
